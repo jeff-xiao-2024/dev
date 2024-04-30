@@ -1,20 +1,14 @@
-name: Docker Deployment
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-application
-
-    - name: Push to Docker Registry
-      run: |
-        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker push my-application
+docker run -d \
+  --name=chromium \
+  --security-opt seccomp=unconfined `#optional` \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=Etc/UTC \
+  -e CHROME_CLI=https://www.linuxserver.io/ `#optional` \
+  -e TITLE=sabamedia\
+  -p 3000:3000 \
+  -p 3001:3001 \
+  -v /path/to/config:/config \
+  --shm-size="1gb" \
+  --restart unless-stopped \
+  lscr.io/linuxserver/chromium:latest
